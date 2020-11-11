@@ -4,7 +4,7 @@ heroImage: /assets/img/maliao.jpeg
 heroText: 前端之路
 tagline: 路漫漫其修远兮
 actionText: 学习笔记 →
-actionLink: /front_end/
+actionLink: /nav.01.js/
 features:
 - title: 重建博客
   details: 2020.11.09从Hexo迁移到VuePress
