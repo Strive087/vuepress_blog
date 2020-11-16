@@ -31,6 +31,14 @@ babel 本身不具有任何转化功能，它把转化的功能都分解到一�
 
 syntax类plugin用于ES新语法的转换，其实也是使用的时候必须的，但是当使用某一个transform类或proposal类的插件时，如果需要做某个语法转换，则相应的syntax类插件，会自动启用，所以在使用babel的时候，syntax类plugin，不需要单独配置。
 
+## 执行顺序
+
+- Plugin 会运行在 Preset 之前。
+- Plugin 会从前到后顺序执行。
+- Preset 的顺序则 刚好相反(从后向前)。
+
+preset 的逆向顺序主要是为了保证向后兼容。我们编排 preset 的时候，其实只要按照规范的时间顺序列出即可。
+
 ## 最新Babel的相关npm包
 
 从babel7.0开始，babel一系列的包都以@babel开头，这个跟babel没关系，是npm包的一种形式。

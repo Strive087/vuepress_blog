@@ -139,7 +139,6 @@ module: {
 
 允许你使用 Babel 和 webpack 转译 JavaScript 文件。使用babel-loader需要安装babel-loader、@babel/core 和 @babel/preset-env 。
 
-
 ### ts-loader
 
 ### imports-loader、exports-loader
