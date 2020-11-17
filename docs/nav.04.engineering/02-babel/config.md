@@ -144,15 +144,22 @@ babel把还在处于proposal阶段的plugin都命名为了-proposal形式的plug
 每个插件和 preset 的配置项都不太一样，这里只介绍可能有且常用的配置项：
 
 - target：用来配置目标运行环境。通过配置browserslist，可以借助.browserslistrc这个文件配置，也可以在preset-env里面独立配置，就是target这个配置项。
+
 - modules：这个用于配置是否启用将ES6的模块转换其它规范的模块。在vue项目里，这个option被显式地配置为了false。
 :::tip
 modules ： “amd” | “umd” | “systemjs” | “commonjs” | “cjs” | “auto” | false, defaults to “auto”.
 :::
+
 - debug：是否开启转码调试，可以看到polyfill相关的处理结果等等。
-- corejs：用来指定preset-env进行polyfill时，要使用的corejs版本。core-js是第三方写的不仅支持的浏览器环境，也能支持最新ES特性的库，该作者称其为standard library。 core-js现在有2个版本在被人使用：v2和v3。 所以preset-env的corejs这个option，可以支持配置2或者3。 但是从未来的角度来说，我认为不应该再关注core-js v2，它始终会被v3代替，慢慢地大家都会升级到v3上面来。因为preset-env默认不会对proposals进行polyfill，所以如果需要对proposals进行polyfill，可以把corejs.proposals设置为true。
+
+- corejs：用来指定preset-env进行polyfill时，要使用的corejs版本。core-js是第三方写的不仅支持的浏览器环境，也能支持最新ES特性的库，该作者称其为standard library。 core-js现在有2个版本在被人使用：v2和v3。 所以preset-env的corejs这个option，可以支持配置2或者3。 但是从未来的角度来说，我认为不应该再关注core-js v2，它始终会被v3代替，慢慢地大家都会升级到v3上面来。因为preset-env默认不会对proposals进行polyfill，所以如果需要对proposals进行polyfill，可以把corejs.proposals设置为true。具体的corejs用法可参考[这里](https://blog.liuyunzhuge.com/2019/09/02/babel%E8%AF%A6%E8%A7%A3%EF%BC%88%E5%9B%9B%EF%BC%89-core-js/)
+
 - loose：启用松散式的代码转换，假如某个插件支持这个option，转换后的代码，会更加简单，代码量更少，但是不会严格遵循ES的规格，通常默认是false。
+
 - spec：启用更加符合ES规格的代码转换，默认也是false，转换后的代码，会增加很多helper函数，代码量更大，但是代码质量更好。
+
 - legacy：启用旧的实现来对代码做转换。（es6语法糖）
+
 - useBuiltIns：由于@babel/polyfill在babel7.4开始，也不支持使用了。 所以现在要用preset-env，必须是得单独安装core-js@3（第三方的库），并且是安装到dependences。useBuiltIns，主要有两个value: entry和usage。 这两个值，不管是哪一个，都会把core-js的modules注入到转换后的代码里面，充当polyfill。
 
 ### useBuiltIns：entry
