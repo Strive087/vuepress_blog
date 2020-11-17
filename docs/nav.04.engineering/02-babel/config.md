@@ -133,6 +133,54 @@ babel把还在处于proposal阶段的plugin都命名为了-proposal形式的plug
 
 因为这一点，所以preset-env不是万能的。 如果我们用到某一个新的ES特性，还是proposal阶段，而且preset-env不提供转码支持的话，就得自己单独配置plugins了。
 
+## runtime
+
+babel的runtime，包含两个部分,@babel/plugin-transform-runtime和@babel/runtime。
+
+### @babel/plugin-transform-runtime
+
+1. babel在转码过程中，会加入很多babel自己的helper函数，这些helper函数，在每个文件里可能都会重复存在，transform-runtime插件可以把这些重复的helper函数，转换成公共的、单独的依赖引入，从而节省转码后的文件大小；
+
+2. 开发者在代码中如果使用了新的ES特性，比如Promise、generator函数等，往往需要通过core-js和regenerator-runtime给全局环境注入polyfill。 这种做法，在应用型的开发中，是非常标准的做法。 但是如果在开发一个独立的工具库项目，不确定它将会被其它人用到什么运行环境里面，那么前面那种扩展全局环境的polyfill就不是一个很好的方式。 transform-runtime可以帮助这种项目创建一个沙盒环境，即使在代码里用到了新的ES特性，它能将这些特性对应的全局变量，转换为对core-js和regenerator-runtime非全局变量版本的引用。这其实也应该看作是一种给代码提供polyfill的方式。
+
+@babel/plugin-transform-runtime是一个开发环境的dependency。
+
+### @babel/runtime
+
+在transform-runtime作用的过程中，都会使用@babel/runtime内部的模块，来代替前面讲到的重复的helper函数、对全局空间有污染的core-js和regenerator-runtime相关变量。所以@babel/runtime是一个生产环境的dependency。
+
+### runtime使用
+
+所以根据是否启用core-js的polyfill，以及core-js的版本，实际使用babel的runtime，有三种安装类型：
+
+```sh
+# disable core-js polyfill
+npm install --save-dev @babel/plugin-transform-runtime
+npm install --save @babel/runtime
+
+# enable core-js@2 polyfill
+npm install --save-dev @babel/plugin-transform-runtime
+npm install --save @babel/runtime-corejs2
+
+# enable core-js@3 polyfill
+npm install --save-dev @babel/plugin-transform-runtime
+npm install --save @babel/runtime-corejs3
+```
+
+### runtime的options
+
+- corejs：这个option，决定了是否对core-js进行polyfill，以及用哪个版本的core-js进行polyfill。
+- helpers：这个option决定了是否对helpers函数进行优化处理。默认为true，如果为false，transform-runtime就不会对helpers函数进行去重提取的处理了。
+- regenerator：这个option决定了是否对regenerator-runtime进行polyfill。 默认为true，与preset-env搭配使用时，应该设置false。
+
+### runtime与preset-env
+
+这里要注意的是 :
+
+1. runtime 和 preset-env提供的polyfill适用的场景不同，runtime适合开发库，preset-env适合开发application。
+2. runtime与preset-env的polyfill不要同时启用。
+3. runtime的polyfill不判断目标运行环境
+
 ## browserslist
 
 官方推荐单独建立一个.browserlist文件来配置，但同时preset-env的options里面有一个target option，就可以用来单独为它配置browserslist。
@@ -143,7 +191,7 @@ babel把还在处于proposal阶段的plugin都命名为了-proposal形式的plug
 
 每个插件和 preset 的配置项都不太一样，这里只介绍可能有且常用的配置项：
 
-- target：用来配置目标运行环境。通过配置browserslist，可以借助.browserslistrc这个文件配置，也可以在preset-env里面独立配置，就是target这个配置项。
+- targets：用来配置目标运行环境。通过配置browserslist，可以借助.browserslistrc这个文件配置，也可以在preset-env里面独立配置，就是target这个配置项。
 
 - modules：这个用于配置是否启用将ES6的模块转换其它规范的模块。在vue项目里，这个option被显式地配置为了false。
 :::tip
