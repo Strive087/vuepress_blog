@@ -1,4 +1,4 @@
-# Babel使用demo
+# 使用demo
 
 先创建src和dist目录，然后在命令行输入 npm init -y 生成package.json文件，接着安装@babel/core和@babel/cli。
 
