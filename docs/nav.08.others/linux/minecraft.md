@@ -101,7 +101,7 @@ sudo systemctl restart docker
 
 ```sh
 docker run -d -it -p 25565:25565 -e EULA=TRUE -e VERSION=1.16.3 \
- -v /root/data1.16.3:/data \
+ -v /root/data1.16.3:/data -e TYPE=FORGE \
  -e FORGE_INSTALLER=forge-1.16.3-34.1.0-installer.jar \
  --name mc1.16.3 itzg/minecraft-server
 ```
