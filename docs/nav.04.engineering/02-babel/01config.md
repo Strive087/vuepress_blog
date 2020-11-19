@@ -244,3 +244,8 @@ babel.config.js会成为未来babel主要的配置方式，babel会自动搜索b
     "stage-2"
 ]
 ```
+
+## 参考链接
+
+- [babel详解](https://blog.liuyunzhuge.com/2019/09/02/babel%E8%AF%A6%E8%A7%A3%EF%BC%88%E5%9B%9B%EF%BC%89-core-js/)
+- [babel官网](https://babeljs.io/docs/en/babel-preset-env)
