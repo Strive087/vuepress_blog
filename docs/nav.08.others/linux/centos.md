@@ -43,4 +43,3 @@ restorecon -Rv /
 ```
 
 restorecon的作用看[这里](https://man.linuxde.net/restorecon)
-
