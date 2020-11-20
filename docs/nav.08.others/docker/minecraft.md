@@ -1,4 +1,4 @@
-# docker搭建minecraft服务器
+# 基于docker搭建minecraft
 
 1.安装docker，可看[官网文档](https://docs.docker.com/engine/install/centos/)（我的是centos）。
 

@@ -38,7 +38,7 @@ systemctl daemon-reload
 
 3.启动隧道
 
-Unit 名称 是 frpc@<启动参数>，例如 frpc@wdnmdtoken666666:12345
+Unit 名称 是 frpc@<启动参数>，例如 frpc@wdnmdtoken666666:12345,不理解看官网。
 
 ```sh
 systemctl <start|stop> <Unit名称>
@@ -46,4 +46,10 @@ systemctl status <Unit名称>
 #查看当前运行的隧道
 systemctl list-units frpc@*
 systemctl <enable|disable> <Unit名称>
+```
+
+4.查看开机自启项
+
+```sh
+systemctl list-unit-files | grep enable
 ```
