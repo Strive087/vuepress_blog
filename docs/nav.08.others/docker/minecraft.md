@@ -67,10 +67,10 @@ firewall-cmd --permanent --zone=public --remove-port=8080/udp
 
 3.安装jdk
 
-官网下载[jdk](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html),我下的是rpm版本。
+官网下载[jdk8u212](https://www.oracle.com/java/technologies/javase/javase8u211-later-archive-downloads.html),我下的是rpm版本。
 
 ```sh
-rpm -ivh jdk-8u271-linux-x64.rpm
+rpm -ivh jdk-8u212-linux-x64.rpm
 ```
 
 4.下载minecraft服务端
@@ -103,7 +103,8 @@ sudo systemctl restart docker
 docker run -d -it -p 25565:25565 -e EULA=TRUE -e VERSION=1.16.3 \
  -v /root/data1.16.3:/data -e TYPE=FORGE \
  -e FORGE_INSTALLER=forge-1.16.3-34.1.0-installer.jar \
- --name mc1.16.3 itzg/minecraft-server
+ -e MEMORY=3G -e USE_AIKAR_FLAGS=true -e DIFFICULTY=normal \
+ --name mc1.16.3backup itzg/minecraft-server
 ```
 
 5.查看minecraft服务端日志
