@@ -22,4 +22,6 @@ Jenkins的安装可以参考这篇[笔记](/nav.08.others/docker/jenkins.md)
 ![dVJ1K3](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/dVJ1K3.png)
 ![nPRumJ](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/nPRumJ.png)
 ![WN8qEC](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/WN8qEC.png)
+![kKHLnQ](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/kKHLnQ.png)
 77121bb55dc93cd3ed9778ba5b81b755fdce6ef4
+cn-zj-dx-2.sakurafrp.com:36483
