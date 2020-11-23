@@ -66,8 +66,9 @@ ServerAliveCountMax 20
 LogLevel INFO
 ```
 
-生成文件后便可以使用主机别称连接，例如：
+生成文件后修改下权限便可以使用主机别称连接，例如：
 
 ```sh
+chmod 644 config
 ssh centos
 ```
