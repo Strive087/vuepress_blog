@@ -25,5 +25,5 @@ cd /mnt/usb
 执行命令取消挂载即可
 
 ```sh
-unmount /mnt/usb
+umount /mnt/usb
 ```
