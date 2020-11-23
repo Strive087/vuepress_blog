@@ -43,8 +43,8 @@ Unit 名称 是 frpc@<启动参数>，例如 frpc@wdnmdtoken666666:12345,不理�
 ```sh
 systemctl <start|stop> <Unit名称>
 systemctl status <Unit名称>
-#查看当前运行的隧道
-systemctl list-units frpc@*
+#查看当前运行的所有服务
+systemctl list-units --type=service
 systemctl <enable|disable> <Unit名称>
 ```
 
