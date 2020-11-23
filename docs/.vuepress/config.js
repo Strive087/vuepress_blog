@@ -1,18 +1,16 @@
 const autobar_options = {
-  maxLevel : 2,
-  navPrefix : "nav",
-  skipEmptySidebar : true,
-  skipEmptyNavbar : true,
-  multipleSideBar : true,
-  pinyinNav:true
+  maxLevel: 2,
+  navPrefix: "nav",
+  skipEmptySidebar: true,
+  skipEmptyNavbar: true,
+  multipleSideBar: true,
+  pinyinNav: true
 };
 // 配置文件的入口文件
 module.exports = {
   title: "前端之路",
   description: "Just playing around",
-  head: [
-    ['link', { rel: 'icon', href: '/favicon.ico' }]
-  ],
+  head: [["link", { rel: "icon", href: "/favicon.ico" }]],
   themeConfig: {
     // !禁用导航栏
     // navbar: false,
@@ -24,14 +22,12 @@ module.exports = {
     //侧边栏
     sidebar: [
       {
-        title: 'Engineering',   // 必要的
-        path: '/Engineering/',      // 可选的, 标题的跳转链接，应为绝对路径且必须存在
+        title: "Engineering", // 必要的
+        path: "/Engineering/", // 可选的, 标题的跳转链接，应为绝对路径且必须存在
         collapsable: false, // 可选的, 默认值是 true,
-        sidebarDepth: 3,    // 可选的, 默认值是 1
-        children: [
-          '/Engineering/webpack/'
-        ]
-      },
+        sidebarDepth: 3, // 可选的, 默认值是 1
+        children: ["/Engineering/webpack/"]
+      }
     ],
     //侧边栏自动生成
     // sidebar: "auto",
@@ -80,6 +76,10 @@ module.exports = {
       }
     }
   },
-  plugins:[ 'permalink-pinyin', ['autobar',autobar_options],'@vuepress/back-to-top']
+  plugins: [
+    "permalink-pinyin",
+    ["autobar", autobar_options],
+    "@vuepress/back-to-top",
+    "@vuepress/medium-zoom"
+  ]
 };
-
