@@ -1,11 +1,3 @@
-const autobar_options = {
-  maxLevel: 2,
-  navPrefix: "nav",
-  skipEmptySidebar: true,
-  skipEmptyNavbar: true,
-  multipleSideBar: true,
-  pinyinNav: true
-};
 // 配置文件的入口文件
 module.exports = {
   title: "前端之路",
@@ -78,8 +70,9 @@ module.exports = {
   },
   plugins: [
     "permalink-pinyin",
-    ["autobar", autobar_options],
+    ["autobar", {pinyinNav: true}],
     "@vuepress/back-to-top",
-    "@vuepress/medium-zoom"
+    "@vuepress/medium-zoom",
+    'rpurl'
   ]
 };
