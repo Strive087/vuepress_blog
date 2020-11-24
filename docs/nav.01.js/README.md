@@ -1,40 +1,7 @@
 # 欢迎来到js世界
 
-## CustomEvent
+## 介绍
 
-例子：
+### 接下来你将看到一篇篇出自前端菜鸟的笔记
 
-```js
-// 添加一个适当的事件监听器
-obj.addEventListener("cat", function(e) { process(e.detail) })
-
-// 创建并分发事件
-var event = new CustomEvent("cat", {"detail":{"hazcheeseburger":true}})
-obj.dispatchEvent(event)
-```
-
-实现：
-
-```js
-(function(){
-    try{
-        // a : While a window.CustomEvent object exists, it cannot be called as a constructor.
-        // b : There is no window.CustomEvent object
-        new window.CustomEvent('T');
-    }catch(e){
-        var CustomEvent = function(event, params){
-            params = params || { bubbles: false, cancelable: false, detail: undefined };
-
-            var evt = document.createEvent('CustomEvent');
-
-            evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-
-            return evt;
-        };
-
-        CustomEvent.prototype = window.Event.prototype;
-
-        window.CustomEvent = CustomEvent;
-    }
-})();
-```
+![ArSWRt](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/ArSWRt.jpg)
