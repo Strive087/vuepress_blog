@@ -103,8 +103,8 @@ sudo systemctl restart docker
 docker run -d -it -p 25565:25565 -e EULA=TRUE -e VERSION=1.16.3 \
  -v /root/data1.16.3:/data -e TYPE=FORGE \
  -e FORGE_INSTALLER=forge-1.16.3-34.1.0-installer.jar \
- -e MEMORY=3G -e USE_AIKAR_FLAGS=true -e DIFFICULTY=normal \
- --name mc1.16.3backup itzg/minecraft-server
+ -e INIT_MEMORY=1G -e MAX_MEMORY=3G -e USE_AIKAR_FLAGS=true \
+ -e DIFFICULTY=normal --name mc1.16.3backup itzg/minecraft-server
 ```
 
 5.查看minecraft服务端日志
