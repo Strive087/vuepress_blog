@@ -1,0 +1,127 @@
+# 函数
+
+在ES中函数包含三种类型：函数声明，函数表示和通过构造函数Function直接创建的函数。
+
+## 函数声明
+
+函数声明的几大要点：
+
+- 拥有特定的名称
+- 要么处于全局上下文中，要么在函数内部声明
+- 在进入上下时就已经创建完毕（也就是在VO/AO的创建阶段已经完成函数声明的创建）
+
+## 函数表达式
+
+函数表达式的几大要点：
+
+- 函数名称可选
+- 必须处于表达式的位置
+- 在代码执行阶段创建（也就是在VO/AO激活阶段完成函数表达式的创建）
+
+函数表达式最重要的作用——”不会污染”变量对象！
+
+有关fe的函数名称可选，我们要注意几点：
+
+- 在外部只能通过被赋值的变量名调用函数
+- 在函数内部调用（例如递归），可以使用变量名或者函数名
+- 如果取了函数名，则在执行栈内，显示的则是函数名。
+
+命名函数表达式的创建原理：
+
+当解释器在代码执行阶段遇到命名的FE时，在FE创建之前，它创建了辅助的特定对象，并添加到当前作用域链的最前端。然后它创建了FE，此时（正如我们在第四章 作用域链知道的那样）函数获取了[[Scope]] 属性——创建这个函数上下文的作用域链）。此后，FE的名称添加到特定对象上作为唯一的属性；这个属性的值是引用到FE上。最后一步是从父作用域链中移除那个特定的对象。
+
+这边特别讲一下，除了赋值，常见表达式还有有哪些：
+
+```js
+// 圆括号（分组操作符）内只能是表达式
+(function foo() {});
+
+// 在数组初始化器内只能是表达式
+[function bar() {}];
+
+// 逗号也只能操作表达式
+1, function baz() {};
+```
+
+”关于圆括号”问题完整的答案如下：
+当函数不在表达式的位置的时候，分组操作符圆括号是必须的——也就是手工将函数转化成FE。
+如果解析器知道它处理的是FE，就没必要用圆括号。以下例子说明：
+
+```js
+
+// 错误例子
+function foo(x) {
+  alert(x);
+}(1); // 这只是一个分组操作符，不是函数调用！
+
+// 正确例子
+(function foo(x) {
+  alert(x);
+})(1); // 这才是调用，不是分组操作符
+
+var foo = {
+  bar: function (x) {
+    return x % 2 != 0 ? 'yes' : 'no';
+  }(1) // 这里不需要圆括号因为函数已处于表达式位置
+};
+alert(foo.bar); // 'yes'
+
+```
+
+## 构造函数Function创建的函数
+
+其主要特点在于这种函数的[[Scope]]属性仅包含全局
+
+```js
+var x = 10;
+function foo() {
+
+  var x = 20;
+  var y = 30;
+  var bar = new Function('alert(x); alert(y);');
+  bar(); // 10, "y" 未定义
+
+}
+```
+
+创建函数的算法(伪代码):
+
+```text
+F = new NativeObject();
+
+// 属性[[Class]]是"Function"
+F.[[Class]] = "Function"
+
+// 函数对象的原型是Function的原型
+F.[[Prototype]] = Function.prototype
+
+// 调用到函数自身
+// 调用表达式F的时候激活[[Call]]
+// 并且创建新的执行上下文
+F.[[Call]] = <reference to function>
+
+// 在对象的普通构造器里编译
+// [[Construct]] 通过new关键字激活
+// 并且给新对象分配内存
+// 然后调用F.[[Call]]初始化作为this传递的新创建的对象
+F.[[Construct]] = internalConstructor
+
+// 当前执行上下文的作用域链
+// 例如，创建F的上下文
+F.[[Scope]] = activeContext.Scope
+// 如果函数通过new Function(...)来创建，
+// 那么
+F.[[Scope]] = globalContext.Scope
+
+// 传入参数的个数
+F.length = countParameters
+
+// F对象创建的原型
+__objectPrototype = new Object();
+__objectPrototype.constructor = F // {DontEnum}, 在循环里不可枚举x
+F.prototype = __objectPrototype
+
+return F
+```
+
+注意，F.[[Prototype]]是函数（构造器）的一个原型，F.prototype是通过这个函数创建的对象的原型（因为术语常常混乱，一些文章中F.prototype被称之为“构造器的原型”，这是不正确的）。
