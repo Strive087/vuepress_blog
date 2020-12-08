@@ -12,15 +12,11 @@ module.exports = {
     nav: [],
     // //------------------------------------
     //侧边栏
-    sidebar: [
-      {
-        title: "Engineering", // 必要的
-        path: "/Engineering/", // 可选的, 标题的跳转链接，应为绝对路径且必须存在
-        collapsable: false, // 可选的, 默认值是 true,
-        sidebarDepth: 3, // 可选的, 默认值是 1
-        children: ["/Engineering/webpack/"]
+    sidebar: {
+      '/nav.01.js/youknowjs/' : {
+        title: "深入理解js", 
       }
-    ],
+    },
     //侧边栏自动生成
     // sidebar: "auto",
     //显示所有页面的标题链接
