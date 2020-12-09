@@ -167,3 +167,8 @@ const baseConfig = {
 
 module.exports = merge(baseConfig, envConfig);
 ```
+
+## 参考链接
+
+- [深入浅出 Webpack](https://webpack.wuhaolin.cn/)
+- [webpack 中文网](https://www.webpackjs.com/guides/)
