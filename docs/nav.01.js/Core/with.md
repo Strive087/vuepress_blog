@@ -5,7 +5,6 @@
 - 首先在原本的作用域链
 - 每一个链接点的作用域的链（如果这个链接点是有prototype的话）
 
-
 ```js
 Object.prototype.x = 10;
 
@@ -46,6 +45,6 @@ console.log(x); // 10
 
 ![YjoIcx](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/YjoIcx.png)
 
-# 参考链接
+## 参考链接
 
 [深入理解JavaScript系列](https://www.cnblogs.com/TomXu/archive/2012/01/12/2308594.html)

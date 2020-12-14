@@ -7,11 +7,17 @@
 一个callee可以用返回（return）或者抛出异常（exception）来结束自身的上下文。
 所有的ECMAScript的程序执行都可以看做是一个执行上下文堆栈[execution context stack]。堆栈的顶部就是处于激活状态的上下文。
 
+![tRzDyX](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/tRzDyX.png)
+
 begin => 进入全局执行上下文环境（初始化对象和函数），执行上下文栈最底部 => 运行全局上下文（激活函数） => 进入函数的执行上下文环境（初始化对象和函数），压入堆栈 => 运行执行上下文 => 返回（return）或者抛出异常（exception）结束上下文 => 返回全局执行上文环境继续运行
 
 栈中每一个执行上下文可以表示为一个对象。
 
+![UsnADi](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/UsnADi.png)
+
 ## 执行上下文（EC）
+
+![XjA6KI](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/XjA6KI.png)
 
 执行上下文(Execution Context)含有：
 
@@ -40,11 +46,3 @@ begin => 进入全局执行上下文环境（初始化对象和函数），执�
   this是执行上下文环境的一个属性，而不是某个变量对象的属性。
 
   这个特点很重要，因为和变量不同，this是没有一个类似搜寻变量的过程。当你在代码中使用了this,这个 this的值就直接从执行的上下文中获取了，而不会从作用域链中搜寻。this的值只取决中进入上下文时的情况。
-
-## this
-
-响了函数代码中this值的变化有几个因素：
-
-首先，在通常的函数调用中，this是由激活上下文代码的调用者来提供的，即调用函数的父上下文(parent context )。this取决于调用函数的方式。
-
-在一个函数上下文中，this由调用者提供，由调用函数的方式来决定。如果调用括号()的左边是引用类型的值，this将设为引用类型值的base对象（base object），在其他情况下（与引用类型不同的任何其它属性），这个值为null。不过，实际不存在this的值为null的情况，因为当this的值为null的时候，其值会被隐式转换为全局对象。注：第5版的ECMAScript中，已经不强迫转换成全局变量了，而是赋值为undefined。
