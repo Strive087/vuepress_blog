@@ -1,6 +1,6 @@
 ---
 home: true
-heroImage: /assets/img/maliao.jpeg
+heroImage: https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/20xFwK.jpg
 heroText: 前端之路
 tagline: 路漫漫其修远兮
 actionText: 学习笔记 →

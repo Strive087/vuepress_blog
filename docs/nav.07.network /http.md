@@ -1,11 +1,5 @@
 # http协议
 
-先了解一下OSI网络协议：
-
-![fRvivX](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/fRvivX.jpg)
-
-预备知识：[了解TCP/IP协议](https://www.cnblogs.com/rickiyang/p/13039228.html)，[MAC与IP之间的联系与区别](https://blog.csdn.net/yang_best/article/details/41643589)
-
 http是基于TCP/IP协议的应用层协议。它不涉及数据包（packet）传输，主要规定了客户端和服务器之间的通信格式，默认使用80端口。
 
 到目前为止http协议历经4版本，他们分别是：
