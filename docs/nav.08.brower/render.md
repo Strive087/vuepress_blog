@@ -119,11 +119,71 @@ WebKit 使用 Flex 和 Bison 解析器生成器，通过 CSS 语法文件自动�
   CSSOM定义了样式表的接口CSSStyleSheet，document.styleshheets可以查看当前网页包含的所有css样式表
   W3C定义了另外一个规范，CSSOM View，增加一些新的属性到Window，Document，Element，MounseEvent等接口，这些CSS的属性能让JavaScript获取视图信息
 
-![1628f1a494d9db07](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/1628f1a494d9db07.jpg)
-
 在网络资源中获得 CSS 代码以后，会把 CSS 交给 CSS 解析器处理，同时会计算布局。 DOM 树会构建成一个 RenderObject 树，它和 DOM 树节点是一一对应，然后再和 解析后的CSS 合并分析，生成 RenderLayer 树， 这个树就是最终用于渲染的树，然后绘制上下文。
 
 ![1628f1a4b6e5e8ad](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/1628f1a4b6e5e8ad.jpg)
+
+## 构建渲染树
+
+![1628f1a494d9db07](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/1628f1a494d9db07.jpg)
+
+WebKits RenderObject 类是所有渲染器的基类，其定义如下：
+
+```c
+class RenderObject{
+  virtual void layout();
+  virtual void paint(PaintInfo);
+  virtual void rect repaintRect();
+  Node* node;  //the DOM node
+  RenderStyle* style;  // the computed style
+  RenderLayer* containgLayer; //the containing z-index layer
+}
+```
+
+每一个渲染器都代表了一个矩形的区域，通常对应于相关节点的 CSS 框，这一点在 CSS2 规范中有所描述。它包含诸如宽度、高度和位置等几何信息。
+
+下面这段 WebKit 代码描述了根据 display 属性的不同，针对同一个 DOM 节点应创建什么类型的渲染器。
+
+```c
+RenderObject* RenderObject::createObject(Node* node, RenderStyle* style)
+{
+    Document* doc = node->document();
+    RenderArena* arena = doc->renderArena();
+    ...
+    RenderObject* o = 0;
+
+    switch (style->display()) {
+        case NONE:
+            break;
+        case INLINE:
+            o = new (arena) RenderInline(node);
+            break;
+        case BLOCK:
+            o = new (arena) RenderBlock(node);
+            break;
+        case INLINE_BLOCK:
+            o = new (arena) RenderBlock(node);
+            break;
+        case LIST_ITEM:
+            o = new (arena) RenderListItem(node);
+            break;
+       ...
+    }
+
+    return o;
+}
+```
+
+元素类型也是考虑因素之一，例如表单控件和表格都对应特殊的框架。
+在 WebKit 中，如果一个元素需要创建特殊的渲染器，就会替换 createRenderer 方法。渲染器所指向的样式对象中包含了一些和几何无关的信息。
+
+渲染器是和 DOM 元素相对应的，但并非一一对应。非可视化的 DOM 元素不会插入渲染树中，例如“head”元素。如果元素的 display 属性值为“none”，那么也不会显示在渲染树中（但是 visibility 属性值为“hidden”的元素仍会显示）。
+有一些 DOM 元素对应多个可视化对象。它们往往是具有复杂结构的元素，无法用单一的矩形来描述。例如，“select”元素有 3 个渲染器：一个用于显示区域，一个用于下拉列表框，还有一个用于按钮。如果由于宽度不够，文本无法在一行中显示而分为多行，那么新的行也会作为新的渲染器而添加。
+另一个关于多渲染器的例子是格式无效的 HTML。根据 CSS 规范，inline 元素只能包含 block 元素或 inline 元素中的一种。如果出现了混合内容，则应创建匿名的 block 渲染器，以包裹 inline 元素。
+
+有一些渲染对象对应于 DOM 节点，但在树中所在的位置与 DOM 节点不同。浮动定位和绝对定位的元素就是这样，它们处于正常的流程之外，放置在树中的其他地方，并映射到真正的框架，而放在原位的是占位框架。
+
+![FGffC3](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/FGffC3.png)
 
 ## 布局
 
@@ -137,6 +197,16 @@ WebKit 使用 Flex 和 Bison 解析器生成器，通过 CSS 语法文件自动�
 
 ![16f82781af838802](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/16f82781af838802.jpg)
 
+HTML 采用基于流的布局模型，这意味着大多数情况下只要一次遍历就能计算出几何信息。处于流中靠后位置元素通常不会影响靠前位置元素的几何特征，因此布局可以按从左至右、从上至下的顺序遍历文档。但是也有例外情况，比如 HTML 表格的计算就需要不止一次的遍历。
+
+坐标系是相对于根框架而建立的，使用的是上坐标和左坐标。
+
+布局是一个递归的过程。它从根渲染器（对应于 HTML 文档的 \<html> 元素）开始，然后递归遍历部分或所有的框架层次结构，为每一个需要计算的渲染器计算几何信息。
+
+根渲染器的位置左边是 0,0，其尺寸为视口（也就是浏览器窗口的可见区域）。
+
+所有的渲染器都有一个“layout”或者“reflow”方法，每一个渲染器都会调用其需要进行布局的子代的 layout 方法。
+
 ## 绘画
 
 知道了DOM节点以及它的样式和布局其实还是不足以渲染出页面来的。为什么呢？举个例子，假如你现在想对着一幅画画一幅一样的画，你已经知道了画布上每个元素的大小，形状以及位置，你还是得思考一下每个元素的绘画顺序，因为画布上的元素是会互相遮挡的（z-index）。
@@ -147,6 +217,75 @@ WebKit 使用 Flex 和 Bison 解析器生成器，通过 CSS 语法文件自动�
 
 ![16f8278fde6ed7c7](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/16f8278fde6ed7c7.jpg)
 
-在绘画这个步骤中，主线程会遍历之前得到的布局树（layout tree）来生成一系列的绘画记录（paint records）。绘画记录是对绘画过程的注释，例如“首先画背景，然后是文本，最后画矩形”。如果你曾经在canvas画布上有使用过JavaScript绘制元素，你可能会觉着这个过程不是很陌生。
+在绘画这个步骤中，主线程会遍历之前得到的布局树（layout tree）来生成一系列的绘画记录（paint records）。绘画记录是对绘画过程的注释，例如“首先画背景，然后是文本，最后画矩形”。如果你曾经在canvas画布上有使用过JavaScript绘制元素，你可能会觉着这个过程不是很陌生。最后通过光栅化将所有值转换为屏幕上的绝对像素。
 
 ![16f8279450d97474](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/16f8279450d97474.jpg)
+
+## 预解析
+
+WebKit 和 Firefox 都进行了这项优化。在执行脚本时，其他线程会解析文档的其余部分，找出并加载需要通过网络加载的其他资源。通过这种方式，资源可以在并行连接上加载，从而提高总体速度。请注意，预解析器不会修改 DOM 树，而是将这项工作交由主解析器处理；预解析器只会解析外部资源（例如外部脚本、样式表和图片）的引用。
+
+## 阻塞
+
+大家仔细看前面的图片会发现JavaScript的加载、解析与执行会阻塞DOM的构建，也就是说，在构建DOM时，HTML解析器若遇到了JavaScript，那么它会暂停构建DOM，将控制权移交给JavaScript引擎，等JavaScript引擎运行完毕，浏览器再从中断的地方恢复DOM构建。
+
+原本DOM和CSSOM的构建是互不影响，井水不犯河水，但是一旦引入了JavaScript，CSSOM也开始阻塞DOM的构建，只有CSSOM构建完毕后，DOM再恢复DOM构建。因为脚本在文档解析阶段会请求样式信息，如果当时还没有加载和解析样式，脚本就会获得错误的回复，这样显然会产生很多问题，所以 Firefox 在样式表加载和解析的过程中，会禁止所有脚本。而对于 WebKit 而言，仅当脚本尝试访问的样式属性可能受尚未加载的样式表影响时，它才会禁止该脚本。
+
+但要需要注意的是渲染是一个渐进的过程。为达到更好的用户体验，渲染引擎会力求尽快将内容显示在屏幕上。它不必等到整个 HTML 文档解析完毕之后，就会开始构建渲染树和设置布局。在不断接收和处理来自网络的其余内容的同时，渲染引擎会将部分内容解析并显示出来。
+
+## 回流与重绘
+
+回流必定会发生重绘，重绘不一定会引发回流。重绘和回流会在我们设置节点样式时频繁出现，同时也会很大程度上影响性能。回流所需的成本比重绘高的多，改变父节点里的子节点很可能会导致父节点的一系列回流。
+
+- 重绘:当render tree中的一些元素需要更新属性，而这些属性只是影响元素的外观、风格，而不会影响布局的，比如background-color。
+- 回流:当render tree中的一部分(或全部)因为元素的规模尺寸、布局、隐藏等改变而需要重新构建
+
+### 减少回流与重绘
+
+- 使用 transform 替代 top
+- 使用 visibility 替换 display: none ，因为前者只会引起重绘，后者会引发回流（改变了布局）
+- 不要把节点的属性值放在一个循环里当成循环里的变量。
+
+  ```js
+  for(let i = 0; i < 1000; i++) {
+      // 获取 offsetTop 会导致回流，因为需要去获取正确的值
+      console.log(document.querySelector('.test').style.offsetTop)
+  }
+  ```
+
+- 不要使用 table 布局，可能很小的一个小改动会造成整个 table 的重新布局
+- 动画实现的速度的选择，动画速度越快，回流次数越多，也可以选择使用 requestAnimationFrame
+- CSS 选择符从右往左匹配查找，避免节点层级过多
+- 将频繁重绘或者回流的节点设置为图层，图层能够阻止该节点的渲染行为影响别的节点。比如对于 video 标签来说，浏览器会自动将该节点变为图层。
+
+## script标签defer与async
+
+接下来我们对比下 defer 和 async 属性的区别：
+
+![fCfNKt](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/fCfNKt.jpg)
+
+其中蓝色线代表JavaScript加载；红色线代表JavaScript执行；绿色线代表 HTML 解析。
+
+1. 普通script标签
+    没有 defer 或 async，浏览器会立即加载并执行指定的脚本，也就是说不等待后续载入的文档元素，读到就加载并执行。
+
+2. 含有async的script标签(异步下载)
+    async 属性表示异步执行引入的 JavaScript，与 defer 的区别在于，如果已经加载好，就会开始执行——无论此刻是 HTML 解析阶段还是 DOMContentLoaded 触发之后。需要注意的是，这种方式加载的 JavaScript 依然会阻塞 load 事件。换句话说，async-script 可能在 DOMContentLoaded 触发之前或之后执行，但一定在 load 触发之前执行。
+
+3. 含有defer的script标签(延迟执行)
+    defer 属性表示延迟执行引入的 JavaScript，即这段 JavaScript 加载时 HTML 并未停止解析，这两个过程是并行的。整个 document 解析完毕且 defer-script 也加载完成之后（这两件事情的顺序无关），会执行所有由 defer-script 加载的 JavaScript 代码，然后触发 DOMContentLoaded 事件。
+
+defer 与相比普通 script，有两点区别：
+
+1. 载入 JavaScript 文件时不阻塞 HTML 的解析，执行阶段被放到 HTML 标签解析完成之后。
+
+2. 在加载多个JS脚本的时候，async是无顺序的加载，而defer是有顺序的加载。
+
+## 为什么操作 DOM 慢
+
+因为 DOM 是属于渲染引擎中的东西，而 JS 又是 JS 引擎中的东西。当我们通过 JS 操作 DOM 的时候，其实这个操作涉及到了两个线程之间的通信，那么势必会带来一些性能上的损耗。操作 DOM 次数一多，也就等同于一直在进行线程之间的通信，并且操作 DOM 可能还会带来重绘回流的情况，所以也就导致了性能上的问题。
+
+## 参考链接
+
+- [聊聊浏览器的渲染机制](https://www.jianshu.com/p/c9049adff5ec)
+- [浏览器的工作原理](https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/)
