@@ -1,84 +1,120 @@
-# node中间件
+# 中间件
 
-中间件 在 Node.js 中被广泛使用，它泛指一种特定的设计模式、一系列的处理单元、过滤器和处理程序，以函数的形式存在，连接在一起，形成一个异步队列，来完成对任何数据的预处理和后处理。
+在NodeJS中，中间件主要是指封装所有Http请求细节处理的方法。一次Http请求通常包含很多工作，如记录日志、ip过滤、查询字符串、请求体解析、Cookie处理、权限验证、参数验证、异常处理等，但对于Web应用而言，并不希望接触到这么多细节性的处理，因此引入中间件来简化和隔离这些基础设施与业务逻辑之间的细节，让开发者能够关注在业务的开发上，以达到提升开发效率的目的。
 
-## 常规中间件模式
+中间件的行为比较类似Java中过滤器的工作原理，就是在进入具体的业务处理之前，先让过滤器处理。
 
-中间件模式中，最基础的组成部分就是 中间件管理器，我们可以用它来组织和执行中间件的函数，如图所示：
+## 中间件机制核心实现
 
-![163ee26dacf74002](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/163ee26dacf74002.jpg)
-
-举一个来自于 《Node.js 设计模式 第二版》 的一个为消息传递库实现 中间件管理器 的例子：
+中间件是从Http请求发起到响应结束过程中的处理方法，通常需要对请求和响应进行处理，因此一个基本的中间件的形式如下：
 
 ```js
-class ZmqMiddlewareManager {
-    constructor(socket) {
-        this.socket = socket;
-        // 两个列表分别保存两类中间件函数：接受到的信息和发送的信息。
-        this.inboundMiddleware = [];
-        this.outboundMiddleware = [];
-        socket.on('message', message => {
-            this.executeMiddleware(this.inboundMiddleware, {
-                data: message
-            });
-        });
-    }
-    
-    send(data) {
-        const message = { data };
-        
-        this.excuteMiddleware(this.outboundMiddleware, message, () => {
-            this.socket.send(message.data);
-        });
-    }
-    
-    use(middleware) {
-        if(middleware.inbound) {
-            this.inboundMiddleware.push(middleware.inbound);
-        }
-        if(middleware.outbound) {
-            this.outboundMiddleware.push(middleware.outbound);
-        }
-    }
-    
-    exucuteMiddleware(middleware, arg, finish) {
-        function iterator(index) {
-            if(index === middleware.length) {
-                return finish && finish();
-            }
-            middleware[index].call(this, arg, err => {
-                if(err) {
-                    return console.log('There was an error: ' + err.message);
-                }
-                iterator.call(this, ++index);
-            });
-        }
-        iterator.call(this, 0);
-    }
+const middleware = (req, res, next) => {
+  // TODO
+  next()
 }
 ```
 
-接下来只需要创建中间件，分别在inbound和outbound中写入中间件函数，然后执行完毕调用next()就好了。比如：
+以下通过两种中间件机制的实现来理解中间件是如何工作的。
+
+### 实现一
+
+![163ee26dacf74002](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/163ee26dacf74002.jpg)
 
 ```js
-const zmqm = new ZmqMiddlewareManager();
+const middleware1 = (req, res, next) => {
+  console.log('middleware1 start')
+  next()
+}
 
-zmqm.use({
-    inbound: function(message, next) {
-        console.log('input message: ', message.data);
-        next();
-    },
-    outbound: function(message, next) {
-        console.log('output message: ', message.data);
-        next();
+const middleware2 = (req, res, next) => {
+  new Promise(resolve => {
+    setTimeout(() => {
+        console.log('middleware2 start')
+        resolve()
+    }, 1000)
+  }).then(() => {
+    next();
+  })
+}
+
+const middleware3 = (req, res, next) => {
+  console.log('middleware3 start')
+  next()
+}
+
+// 中间件数组
+const middlewares = [middleware1, middleware2, middleware3]
+function run (req, res) {
+  const next = () => {
+    // 获取中间件数组中第一个中间件
+    const middleware = middlewares.shift()
+    if (middleware) {
+      middleware(req, res, next)
     }
-});
+  }
+  next()
+}
+run() // 模拟一次请求发起
+
+// middleware1 start
+// middleware2 start
+// middleware3 start
 ```
 
-## Kow2中的中间件
+通过递归的形式，将后续中间件的执行方法传递给当前中间件，在当前中间件执行结束，通过调用next()方法执行后续中间件的调用。如果中间件中有异步操作，需要在异步操作的流程结束后再调用next()方法，否则中间件不能按顺序执行，如实现一中的middleware2所示。
 
-![163ee26db296c93e](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/163ee26db296c93e.jpg)
+### 实现二
 
-## 参考链接
+![zqtv2B](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/zqtv2B.png)
 
-- [Node.js 中间件模式](https://juejin.cn/post/6844903619209199624)
+```js
+function run (req, res) {
+  const next = () => {
+    const middleware = middlewares.shift()
+    if (middleware) {
+      // 将middleware(req, res, next)包装为Promise对象
+      return Promise.resolve(middleware(req, res, next))
+    }else{
+      return Promise.resolve();
+    }
+  }
+  next()
+}
+
+const middleware1 = async (req, res, next) => {
+  console.log('midlleware1 start');
+  await Promise.resolve(setTimeout(() => {
+    console.log('middleware1 running');
+  },1000))
+  next().then(() => {
+    console.log('middleware1 finished');
+  })
+}
+
+const middleware2 = async (req, res, next) => {
+  console.log('midlleware2 start');
+  await Promise.resolve(setTimeout(() => {
+    console.log('middleware2 running');
+  },1000))
+  next().then(() => {
+    console.log('middleware2 finished');
+  })
+}
+
+const middleware3 = async (req, res, next) => {
+  console.log('midlleware3 start');
+  await Promise.resolve(setTimeout(() => {
+    console.log('middleware3 running');
+  },1000))
+  next().then(() => {
+    console.log('middleware3 finished');
+  })
+}
+
+const middlewares = [middleware1,middleware2,middleware3];
+
+run();
+
+
+```
