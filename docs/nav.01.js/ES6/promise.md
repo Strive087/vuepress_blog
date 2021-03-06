@@ -1,5 +1,28 @@
 # Promise
 
+## Prommise调度技巧
+
+```js
+var p1 = new Promise(resolve =>{
+  resolve('B')
+})
+var p2 = new Promise(resolve =>{
+  resolve(p1)
+})
+var p3 = new Promise(resolve =>{
+  resolve('A')
+})
+p2.then(value => {
+  console.log(value)
+})
+p3.then(value => {
+  console.log(value)
+})
+// A B
+```
+
+这里我们会发现p2不是用立即值而是用promise p1决议，后者本身决议为值”B“。规定行为是从p1展开到p2，但是是异步地展开。
+
 ## 手写Promise
 
 ```js
