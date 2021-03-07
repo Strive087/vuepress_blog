@@ -1,5 +1,31 @@
 # Promise
 
+## Promise封装工具
+
+通过这个封装函数，可以将error-first风格的函数转换成可响应的Promise。
+
+```js
+if(!Promise.wrap){
+  Promise.wrap = function(fn){
+    return function(){
+      var args = Array.prototype.slice.call(arguments)
+      return new Promise((resolve, reject)=>{
+        fn.apply(null, args.concat(function(err,data){
+          if(err){
+            reject(err);
+          }else{
+            resolve(data);
+          }
+        }))
+      })
+    }
+  }
+}
+
+var request = Promise.wrap(ajax);
+request('http://url1').then(...)
+```
+
 ## Prommise调度技巧
 
 ```js
