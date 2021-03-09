@@ -407,3 +407,40 @@ console.log(res);
 对于我们前面所说的无法以顺序同步的、符合我们大脑思考模式的方式表达异步这个问题，这是一个近乎完美的解决方案。
 
 从本质上而言，我们把异步作为现实细节抽象了出去，使得我们可以以同步顺序的形式追踪流程控制。（这句话的理解很重要！！！）
+
+## Generator+Promise
+
+如果你理解了上文所说的内容，那么你一定想到了只要将生成器和Promise相结合，就能够解决之前异步回调代码所列举的各种问题。
+
+那么如何让他们相结合呢？最自然的方法就是yield出一个Promise，然后通过Promise来控制生成器的迭代器,将生成器的迭代器的控制权反转回到Promise手里，而不是第三方的手中。举例说明下：
+
+```js
+function foo(x,y){
+  return new Promise((resolve,reject)=>{
+    ajax('http://url1?x='+x+'&y='+y,function(err,data){
+      if(err){
+        reject(err)
+      }else{
+        resolve(data)
+      }
+    })
+  })
+}
+function *main(){
+  try{
+    var res = yield foo(1,2);
+    console.log(res);
+  }catch(err){
+    console.log(err)
+  }
+}
+var it = main();
+//yield出一个Promise
+var p = it.next().value;
+//通过Promise来控制生成器的迭代器
+p.then((data)=>{
+  it.next(data)
+},(err)=>{
+  it.throw(err)
+})
+```
