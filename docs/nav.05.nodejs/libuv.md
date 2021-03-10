@@ -64,4 +64,3 @@ node中事件循环的顺序
 process.nextTick 是一个独立于 eventLoop 的任务队列。
 
 在每一个 eventLoop 阶段完成后会去检查 nextTick 队列，如果里面有任务，会让这部分任务优先于微任务执行。是所有异步任务中最快执行的。
-

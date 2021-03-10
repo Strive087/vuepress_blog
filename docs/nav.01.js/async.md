@@ -444,3 +444,90 @@ p.then((data)=>{
   it.throw(err)
 })
 ```
+
+### 生成器自动执行器
+
+现在我们已知*main(...)中只有一个需要支持Promise的步骤，我们可以实现Promise驱动的生成器，不管其内部有多少个步骤。这种方式可以实现重复迭代控制，每次会生成一个Promise，等其决议后再继续。还有，可以正确处理it.next()调用过程中生成器抛出的错误以及通过it.throw()把一个Promise拒绝泡入生成器中。
+
+这里展示一个类似于实现以上内容的工具：
+
+```js
+function run(gen){
+  var args = [].slice.call(arguments, 1);
+  var it = gen.apply(this, args);
+  return Promise.resolve().then(function handleNext(value){
+    //获取yield出的值以及对yield传值
+    var next = it.next(value);
+    return (function handleResult(next){
+      if(next.done){
+        return next.value;
+      }else{
+        return Promise.resolve(next.value)
+        .then(handleNext,function handleErr(err){
+          //promise被拒绝的话就将其传递给生成器处理，然后Promise再处理
+          return Promise.resolve(it.throw(err)).then(handleResult)
+        })
+      }
+    })(next)
+  })
+}
+run(main);
+```
+
+这种运行run(...)的方式，它会自动异步运行你传递给他的生成器，直到结束。
+
+### 生成器中Promise并发
+
+假如我们应用场景是要求多并发，例如我们需要三个请求，第三个请求的参数需要前两个请求的结果。那么这个时候我们可以这要做：
+
+```js
+function *main(){
+  try{
+    var p1 = foo(1,2);
+    var p2 = foo(2,3);
+    var res = yield Promise.all([p1,p2]);
+    var res3 = yield foo(res[0],res[1]);
+    console.log(res3)
+  }catch(err){
+    console.log(err)
+  }
+}
+run(main);
+```
+
+## async/await
+
+async/await 其实就是 Generator+Promise 的语法糖。如果将上文 Generator+Promise 的代码用 async/await 的方式来实现，就是以下的样子：
+
+```js
+function foo(x,y){
+  return new Promise((resolve,reject)=>{
+    ajax('http://url1?x='+x+'&y='+y,function(err,data){
+      if(err){
+        reject(err)
+      }else{
+        resolve(data)
+      }
+    })
+  })
+}
+async function main(){
+  try{
+    var res = await foo(1,2);
+    console.log(res);
+  }catch(err){
+    console.log(err)
+  }
+}
+main();
+```
+
+怎么样，是不是瞬间清新了很多？一比较就会发现，async 函数就是将 Generator 函数的星号（*）替换成 async，将 yield 替换成 await。
+
+async 函数比 Generator 函数的优势体现在以下几点：
+
+1. 内置执行器。 Generator 函数的执行必须靠执行器，所以才有了 co 函数库（类似于前面的run辅助函数），而 async 函数自带执行器。也就是说，async 函数的执行，与普通函数一模一样，只要一行。
+
+2. 更好的语义。 async 和 await，比起星号和 yield，语义更清楚了。async 表示函数里有异步操作，await 表示紧跟在后面的表达式需要等待结果。
+
+3. 更广的适用性。 co 函数库约定，yield 命令后面只能是 Thunk 函数或 Promise 对象，而 async 函数的 await 命令后面，可以跟 Promise 对象和原始类型的值（数值、字符串和布尔值，但这时等同于同步操作）。
