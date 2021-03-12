@@ -69,7 +69,7 @@ run() // 模拟一次请求发起
 ![zqtv2B](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/zqtv2B.png)
 
 ```js
-function run (req, res) {
+function run () {
   const next = () => {
     const middleware = middlewares.shift()
     if (middleware) {
@@ -84,30 +84,39 @@ function run (req, res) {
 
 const middleware1 = async (req, res, next) => {
   console.log('midlleware1 start');
-  await Promise.resolve(setTimeout(() => {
-    console.log('middleware1 running');
-  },1000))
-  next().then(() => {
+  await new Promise(resolve => {
+    setTimeout(() => {
+      console.log('middleware1 running');
+      resolve()
+    },1000)
+  })
+  await next().then(() => {
     console.log('middleware1 finished');
   })
 }
 
 const middleware2 = async (req, res, next) => {
   console.log('midlleware2 start');
-  await Promise.resolve(setTimeout(() => {
-    console.log('middleware2 running');
-  },1000))
-  next().then(() => {
+  await new Promise(resolve => {
+    setTimeout(() => {
+      console.log('middleware2 running');
+      resolve()
+    },1000)
+  })
+  await next().then(() => {
     console.log('middleware2 finished');
   })
 }
 
 const middleware3 = async (req, res, next) => {
   console.log('midlleware3 start');
-  await Promise.resolve(setTimeout(() => {
-    console.log('middleware3 running');
-  },1000))
-  next().then(() => {
+  await new Promise(resolve => {
+    setTimeout(() => {
+      console.log('middleware3 running');
+      resolve()
+    },1000)
+  })
+  await next().then(() => {
     console.log('middleware3 finished');
   })
 }
@@ -115,6 +124,8 @@ const middleware3 = async (req, res, next) => {
 const middlewares = [middleware1,middleware2,middleware3];
 
 run();
-
-
 ```
+
+在实现一情况下，无法在next()为异步操作时再将当前中间件的其他代码作为回调执行。因此可以将next()方法的后续操作封装成一个Promise对象，中间件内部就可以使用next.then()形式完成业务处理结束后的回调。
+
+在express框架中，中间件的实现方式为实现一，并且全局中间件和内置路由中间件中根据请求路径定义的中间件共同作用，不过无法在业务处理结束后再调用当前中间件中的代码。koa2框架中中间件的实现方式为实现二，将next()方法返回值封装成一个Promise，便于后续中间件的异步流程控制，实现了koa2框架提出的洋葱圈模型，即每一层中间件相当于一个球面，当贯穿整个模型时，实际上每一个球面会穿透两次。
