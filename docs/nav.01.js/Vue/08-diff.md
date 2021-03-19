@@ -267,3 +267,57 @@ function updateChildren(parentElm, oldCh, newCh) {
         那就说明是已有的节点，只是位置不对，那就移动节点位置即可。
     2. 如果和已有key值不匹配
         再已有的key值集合内找不到，那就说明是新的节点，那就创建一个对应的真实Dom节点，插入到旧开始节点对应的真实Dom前面即可。
+
+这么说并不太好理解，结合之前的示例，根据以下的流程图将会明白很多：
+
+![hSNgin](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/hSNgin.gif)
+
+示例的初始状态就是这样了，之前定义的下标以及对应的节点就是start和end标记。
+
+![t7DnDe](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/t7DnDe.gif)
+
+首先进行之前说明两两四次的快捷比对，找不到后通过旧节点的key值列表查找，并没有找到说明E是新增的节点，创建对应的真实Dom，插入到旧节点里start对应真实Dom的前面，也就是A的前面，已经处理完了一个，新start位置后移一位。
+
+![I45FK3](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/I45FK3.gif)
+
+接着开始处理第二个，还是首先进行快捷查找，没有后进行key值列表查找。发现是已有的节点，只是位置不对，那么进行插入操作，参考节点还是A节点，将原来旧节点C设置为undefined，这里之后会跳过它。又处理完了一个节点，新start后移一位。
+
+![6QVNs5](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/6QVNs5.gif)
+
+再处理第三个节点，通过快捷查找找到了，是新开始节点对应旧开始节点，Dom位置是对的，新start和旧start都后移一位。
+
+![eA4R66](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/eA4R66.gif)
+
+接着处理的第四个节点，通过快捷查找，这个时候先满足了旧开始节点和新结束节点的匹配，Dom位置是不对的，插入节点到最后位置，最后将新end前移一位，旧start后移一位。
+
+![cF33bp](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/cF33bp.gif)
+
+处理最后一个节点，首先会执行跳过undefined的逻辑，然后再开始快捷比对，匹配到的是新开始节点和旧开始节点，它们各自start后移一位，这个时候就会跳出循环了。
+
+接着看下最后的收尾代码：
+
+```js
+function updateChildren(parentElm, oldCh, newCh) {
+  let oldStartIdx = 0
+  ...
+  
+  while(oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+    ...
+  }
+  
+  if (oldStartIdx > oldEndIdx) {  // 如果旧节点列表先处理完，处理剩余新节点
+    refElm = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm
+    addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue)  // 添加
+  } 
+  
+  else if (newStartIdx > newEndIdx) {  // 如果新节点列表先处理完，处理剩余旧节点
+    removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx)  // 删除废弃节点
+  }
+}
+```
+
+我们之前的示例刚好是新旧节点列表同时处理完退出的循环，这里是退出循环后为还有没有处理完的节点，做不同的处理：
+
+![GKS0ZK](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/GKS0ZK.gif)
+
+以新节点列表为标准，如果是新节点列表处理完，旧列表还有没被处理的废弃节点，删除即可；如果是旧节点先处理完，新列表里还有没被使用的节点，创建真实Dom并插入到视图即可。这就是整个diff算法过程。
