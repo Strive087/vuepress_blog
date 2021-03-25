@@ -1,5 +1,7 @@
 # Generator
 
+![16f11da907f74194](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/16f11da907f74194.jpg)
+
 生成器对象是由一个 generator function 返回的,并且它符合可迭代协议和迭代器协议。
 
 语法：
