@@ -36,10 +36,10 @@ module.exports = {
     // prevLinks: false
     // //------------------------------------
     // 假定是 GitHub. 同时也可以是一个完整的 GitLab URL
-    repo: "https://github.com/Strive087/vuepress_blog",
+    // repo: "https://github.com/Strive087/vuepress_blog",
     // 自定义仓库链接文字。默认从 `themeConfig.repo` 中自动推断为
     // "GitHub"/"GitLab"/"Bitbucket" 其中之一，或是 "Source"。
-    repoLabel: "GitHub",
+    // repoLabel: "GitHub",
 
     // 以下为可选的编辑链接选项
 
@@ -50,7 +50,7 @@ module.exports = {
     // 假如文档放在一个特定的分支下：
     docsBranch: "master",
     // 默认是 false, 设置为 true 来启用
-    editLinks: true,
+    editLinks: false,
     // 默认为 "Edit this page"
     // editLinkText: '帮助我们改善此页面！',
     // //------------------------------------
