@@ -4,7 +4,7 @@
 
 ![Ht0Q0C](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/Ht0Q0C.jpg)
 
-对于多核心的架构，由于共用一套MMU和cache，所以地址空间是一个，同一时刻只能运行一个进程，此时进程不能并行只能并发。同一个进程下的多线程可以并行执行，因为多线程共享同一套进程空间资源。
+对于多核心的架构，由于共用一套MMU(Memory management unit)和cache，所以地址空间是一个，同一时刻只能运行一个进程，此时进程不能并行只能并发。同一个进程下的多线程可以并行执行，因为多线程共享同一套进程空间资源。
 
 ![EuHKEl](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/EuHKEl.jpg)
 

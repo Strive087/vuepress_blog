@@ -119,13 +119,11 @@ WebKit 使用 Flex 和 Bison 解析器生成器，通过 CSS 语法文件自动�
   CSSOM定义了样式表的接口CSSStyleSheet，document.styleshheets可以查看当前网页包含的所有css样式表
   W3C定义了另外一个规范，CSSOM View，增加一些新的属性到Window，Document，Element，MounseEvent等接口，这些CSS的属性能让JavaScript获取视图信息
 
-在网络资源中获得 CSS 代码以后，会把 CSS 交给 CSS 解析器处理，同时会计算布局。 DOM 树会构建成一个 RenderObject 树，它和 DOM 树节点是一一对应，然后再和 解析后的CSS 合并分析，生成 RenderLayer 树， 这个树就是最终用于渲染的树，然后绘制上下文。
-
-![1628f1a4b6e5e8ad](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/1628f1a4b6e5e8ad.jpg)
+在网络资源中获得 CSS 代码以后，会把 CSS 交给 CSS 解析器处理生成CSSOM树。
 
 ## 构建渲染树
 
-![1628f1a494d9db07](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/1628f1a494d9db07.jpg)
+![3lnAe6](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/3lnAe6.png)
 
 WebKits RenderObject 类是所有渲染器的基类，其定义如下：
 
