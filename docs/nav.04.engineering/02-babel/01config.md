@@ -222,7 +222,7 @@ usage相比entry，最大好处就是他会根据每个文件用到的了哪些�
 
 .babelrc 和 .babelrc.js 的作用是相同，他们还可以直接在项目的package.json文件中编写。
 
-而babel.config.js 与其他几个不同的是，他可以对node_modules和[symlinked packages](https://zh.wikipedia.org/wiki/%E7%AC%A6%E5%8F%B7%E9%93%BE%E6%8E%A5)内的文件进行转码。
+而babel.config.js 与其他几个不同的是，他可以对node_modules和[symlinked packages](https://zh.wikipedia.org/wiki/%E7%AC%A6%E5%8F%B7%E9%93%BE%E6%8E%A5)内的文件进行转码。而其余两个只会影响本项目中的代码。
 
 对symlinked packages的[拓展了解](https://juejin.im/post/6844904194999058440#heading-90)
 
