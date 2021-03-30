@@ -1,3 +1,5 @@
 # Plugin
 
-这里分享一些日常开发中使用的插件
+这里分享一些日常开发中使用的插件:
+
+- MiniCssExtractPlugin : 提取CSS文件

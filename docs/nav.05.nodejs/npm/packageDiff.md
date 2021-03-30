@@ -1,4 +1,4 @@
-# devDependencies和dependencies的区别
+# devDependencies和dependencies
 
 通常我们安装模块时,使用
 
