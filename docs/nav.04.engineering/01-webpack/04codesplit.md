@@ -17,7 +17,9 @@ optimization:{
 最后，如果希望对单入口文件中依赖的文件单独打包一个chunk，需要使用import()方法来加载。
 
 ```js
-
-
+import(/* webpackChunkName: 'test' */ './test')
+  .then(({ sub }) => {
+    console.log(sub(2, 1));
+  })
+  .catch((e) => console.log(e));
 ```
- 
