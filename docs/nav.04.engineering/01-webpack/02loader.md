@@ -14,10 +14,6 @@ loader 支持链式传递。能够对资源使用流水线(pipeline)。一组链
 - 插件(plugin)可以为 loader 带来更多特性。
 - loader 能够产生额外的任意文件。
 
-## 编写 loader
-
-待编写...
-
 ## 常用 loader
 
 这里分享一些日常开发中使用的 Loader
@@ -139,15 +135,54 @@ module: {
 
 允许你使用 Babel 和 webpack 转译 JavaScript 文件。使用babel-loader需要安装babel-loader、@babel/core 和 @babel/preset-env 。
 
-### ts-loader
-
-### imports-loader、exports-loader
-
 ## 手写loader
 
 在手写loader之前，我们需要了解loader的一些概念。我们可以看webpack的[官网](https://webpack.docschina.org/api/loaders/)
 
+手写一个类babel-loader的Loader：
 
+```js
+//index.js
+const { getOptions } = require('loader-utils');
+const { validate } = require('schema-utils');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const babel = require('@babel/core');
+
+const schema = require('./babel-schema.json');
+
+// eslint-disable-next-line func-names
+module.exports = function (content,map,meta) {
+  const options = getOptions(this) || {};
+  validate(schema, options, {
+    name: '_babel-loader',
+  });
+  var callback = this.async();
+  babel.transformAsync(content, options).then(result => {
+    result.code;
+    result.map;
+    result.ast;
+    callback(null, result.code,result.map,meta);
+  }).catch(e=>{
+    callback(e)
+  })
+};
+```
+
+```json
+//babel-schema.json
+{
+  "type" : "object",
+  "properties" : {
+    "presets":{
+      "type":"array"
+    },
+    "plugins":{
+      "type":"array"
+    }
+  },
+  "additionalProperties" : true
+}
+```
 
 ## 参考链接
 
