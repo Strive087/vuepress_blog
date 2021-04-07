@@ -1,5 +1,7 @@
 # 基于docker搭建minecraft
 
+![hjsYBf](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/hjsYBf.jpg)
+
 1.安装docker，可看[官网文档](https://docs.docker.com/engine/install/centos/)（我的是centos）。
 
 ```sh

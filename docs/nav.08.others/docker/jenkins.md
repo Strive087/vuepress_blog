@@ -1,5 +1,7 @@
 # 基于docker搭建jenkins
 
+![AKsM7e](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/AKsM7e.png)
+
 具体可以查阅[官网](https://www.jenkins.io/zh/doc/book/installing/#%E5%9C%A8macos%E5%92%8Clinux%E4%B8%8A)
 
 ```sh
