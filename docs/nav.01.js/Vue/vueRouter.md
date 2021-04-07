@@ -141,6 +141,65 @@ const router = new VueRouter({
 })
 ```
 
+## 导航守卫
+
+不得不说导航守卫这个名字取得很唬人，搞得我也刚开始因为这个名字，老是会联想不到他的作用。**其实说白了，导航守卫就是vue-router提供了提供了一系列的钩子，这些钩子会在路由跳转的过程中按顺序触发。**
+
+以下这些钩子，都需要传入一个回调函数，回调函数接受三个参数（**除了全局后置钩子没有next参数**），to\from\next,to和from就是route，next就是一个函数， 一定要调用该函数来进行下一步，类似于nodejs里的中间件。
+
+next函数可以接受参数，有以下几种情况：
+
+- next()：不接受任何参数，直接下到下一步。
+- next(false)：中断当前的导航。不跳转了。
+- next('/') 或者 next({ path: '/' })：跳转到一个不同的地址。
+- next(error)：如果传入 next 的参数是一个 Error 实例，则导航会被终止且该错误会被传递给 router.onError() 注册过的回调。
+- next(vm => {})：传入一个回调函数，会在导航确认后执行。**这个回调函数仅限于组件内的守卫beforeRouteEnter可以使用，其他守卫不可使用。**
+
+### 所有钩子
+
+- 全局前置守卫：router.beforeEach，当一个导航触发时，全局前置守卫按照创建顺序调用。守卫是异步解析执行。
+- 全局解析守卫：router.beforeResolve，在导航被确认之前，同时在所有组件内守卫和异步路由组件被解析之后，解析守卫就被调用。
+- 全局后置钩子：router.afterEach，这些钩子不会接受 next 函数也不会改变导航本身。
+- 路由独享的守卫：beforeEnter，在路由配置上直接定义。
+- 组件内的守卫：你可以在路由组件内直接定义
+
+  - beforeRouteEnter：在渲染该组件的对应路由被 confirm 前调用不能获取组件实例 `this`因为当守卫执行前，组件实例还没被创建。不过，你可以通过传一个回调给 next来访问组件实例。在导航被确认的时候执行回调，并且把组件实例作为回调方法的参数。**注意 beforeRouteEnter 是支持给 next 传递回调的唯一守卫。**
+
+  - beforeRouteUpdate：在当前路由改变，但是该组件被复用时调用。 举例来说，对于一个带有动态参数的路径 /foo/:id，在 /foo/1 和 /foo/2 之间跳转的时候，由于会渲染同样的 Foo 组件，因此组件实例会被复用。而这个钩子就会在这个情况下被调用。
+
+  - beforeRouteLeave：导航离开该组件的对应路由时调用。这个离开守卫通常用来禁止用户在还未保存修改前突然离开。该导航可以通过 next(false) 来取消
+
+### 完整的导航解析流程
+
+1. 导航被触发。
+2. 在失活的组件里调用 beforeRouteLeave 守卫。
+3. 调用全局的 beforeEach 守卫。
+4. 在重用的组件里调用 beforeRouteUpdate 守卫 (2.2+)。
+5. 在路由配置里调用 beforeEnter。
+6. 解析异步路由组件。
+7. 在被激活的组件里调用 beforeRouteEnter。
+8. 调用全局的 beforeResolve 守卫 (2.5+)。
+9. 导航被确认。
+10. 调用全局的 afterEach 钩子。
+11. 触发 DOM 更新。
+12. 调用 beforeRouteEnter 守卫中传给 next 的回调函数，创建好的组件实例会作为回调函数的参数传入。
+
+## 路由懒加载
+
+很简单就只使用异步加载组件即可:
+
+```js
+const Foo = () => import('./Foo.vue')
+```
+
+如果需多个组件打包到一个chunk，或者自定义chunk名字可以这样（不过还是建议看webpack官网详细介绍，webpack5对这个支持有所更新）：
+
+```js
+const Foo = () => import(/* webpackChunkName: "group-foo" */ './Foo.vue')
+const Bar = () => import(/* webpackChunkName: "group-foo" */ './Bar.vue')
+const Baz = () => import(/* webpackChunkName: "group-foo" */ './Baz.vue')
+```
+
 ## 前端路由原理及实现
 
 实现前端路由，要解决两个问题：
@@ -452,4 +511,6 @@ export default {
 
 参考链接：
 
+- [Vue](https://cn.vuejs.org/)
+- [Vue Router](https://router.vuejs.org/zh/)
 - [前端路由原理解析和实现](https://juejin.cn/post/6844903842643968014)
