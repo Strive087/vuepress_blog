@@ -4,7 +4,7 @@ heroImage: https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/20xF
 heroText: 前端之路
 tagline: 路漫漫其修远兮
 actionText: 学习笔记 →
-actionLink: /nav.01.js/
+actionLink: /js/
 features:
 - title: 重建博客
   details: 2020.11.09从Hexo迁移到VuePress
