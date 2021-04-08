@@ -147,3 +147,16 @@ function queueWatcher(watcher) {
 ## 数组的响应式原理
 
 再初步了解了响应式的原理后，接下来我们深入响应式，解析数组响应式的原理。
+
+## 总结
+
+- Data 对象：Vue 中的 data 方法中返回的对象。
+- Dep 对象：每一个 Data 属性都会创建一个 Dep，用来搜集所有使用到这个 Data 的 Watcher 对象。
+- Watcher 对象：主要用于渲染 DOM。
+
+![1460000023514448](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/1460000023514448.jpg)
+
+1. 从 new Vue 开始，首先通过 get、set 监听 Data 中的数据变化，同时创建 Dep 用来搜集使用该 Data 的 Watcher。
+2. 编译模板，创建 Watcher，并将 Dep.target 标识为当前 Watcher。
+3. 编译模板时，如果使用到了 Data 中的数据，就会触发 Data 的 get 方法，然后调用 Dep.addSub 将 Watcher 搜集起来。
+4. 数据更新时，会触发 Data 的 set 方法，然后调用 Dep.notify 通知所有使用到该 Data 的 Watcher 去更新 DOM。
