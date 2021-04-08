@@ -25,7 +25,7 @@ WebSocket复用了HTTP的握手通道。具体指的是，客户端通过HTTP请
 
     首先，客户端发起协议升级请求。可以看到，采用的是标准的HTTP报文格式，且只支持GET方法。
 
-    ```text
+    ```markdown
     GET / HTTP/1.1
     Host: localhost:8080
     Origin: http://127.0.0.1:3000
@@ -46,7 +46,7 @@ WebSocket复用了HTTP的握手通道。具体指的是，客户端通过HTTP请
 
     服务端返回内容如下，状态代码101表示协议切换。到此完成协议升级，后续的数据交互都按照新的协议来。Websocket成功建立啦！
 
-    ```text
+    ```markdown
     HTTP/1.1 101 Switching Protocols
     Connection:Upgrade
     Upgrade: websocket

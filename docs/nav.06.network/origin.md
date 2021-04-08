@@ -70,7 +70,7 @@ server.listen('8080');
 
 浏览器跨域访问js、css、img等常规静态资源被同源策略许可，但iconfont字体文件(eot|otf|ttf|woff|svg)例外，此时可在nginx的静态资源服务器中加入以下配置。
 
-```text
+```markdown
 location / {
   add_header Access-Control-Allow-Origin *;
 }
@@ -78,7 +78,7 @@ location / {
 
 反向代理具体配置如下：
 
-```text
+```markdown
 #proxy服务器
 server {
     listen       81;

@@ -12,7 +12,7 @@ wget -e "https_proxy=http://127.0.0.1:1087" -qO- https://raw.githubusercontent.c
 
 然后在~/.bash_profile, ~/.zshrc, ~/.profile, 或者 ~/.bashrc 文件中填入下面内容，接着输入nvm，如果显示没有，然就退出终端再进去。
 
-```txt
+```markdown
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 ```

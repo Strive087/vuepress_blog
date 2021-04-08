@@ -108,13 +108,13 @@ console.log(result);
 
 比如"hello"字符串等价于如下的形式：
 
-```text
+```markdown
 "hello" == "" + "h" + "" + "e" + "" + "l" + "" + "l" + "o" + "";
 ```
 
 也等价于：
 
-```text
+```markdown
 "hello" == "" + "" + "hello"
 ```
 

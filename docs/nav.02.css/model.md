@@ -16,7 +16,7 @@
 每一个节点都会生成 0..n 个这样的框。
 所有元素都有一个“display”属性，决定了它们所对应生成的框类型。示例:
 
-```text
+```markdown
 block  - generates a block box.
 inline - generates one or more inline boxes.
 none - no box is generated.

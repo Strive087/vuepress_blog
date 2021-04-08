@@ -29,7 +29,7 @@ node process-args.js 参数1 参数2 参数3
 
 输出如下：
 
-```text
+```markdown
 0: /usr/local/bin/node
 1: /Users/mjr/work/node/process-args.js
 2: 参数1

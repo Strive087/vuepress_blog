@@ -36,7 +36,7 @@ chmod 600 rsa_id
 
 在本机的.ssh文件夹下创建config文件，内容如下:
 
-```txt
+```markdown
 # 多主机配置
 Host server.lwy （别名）
 HostName XXX.XXX.XXX.XXX (ip地址)

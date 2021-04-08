@@ -6,7 +6,7 @@
 
 Cookie主要是由服务器生成，且前端也可以设置，保存在客户端本地的一个文件，通过response响应头的set-Cookie字段进行设置，且Cookie的内容自动在请求的时候被传递给服务器。如下：
 
-```text
+```markdown
 [HTTP/1.1 200 OK]
 Server:[bfe/1.0.8.18]
 Etag:["58860415-98b"]

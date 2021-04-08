@@ -16,7 +16,7 @@ mkdir -p /etc/shadowsocks
 vim /etc/shadowsocks/shadowsocks.json
 ```
 
-```text
+```markdown
 添加以下内容
 { 
     "server":"XXXXX",
@@ -50,7 +50,7 @@ fast_open：true或false。开启fast_open以降低延迟，但要求Linux内核
 
 编写启动脚本
 
-```text
+```markdown
 新建启动脚本/usr/lib/systemd/system/shadowsocks,内容如下
  
 [Unit]
@@ -69,7 +69,7 @@ systemctl status shadowsocks
 
 ## 验证
 
-```text
+```markdown
 curl --socks5 127.0.0.1:1080 http://httpbin.org/ip
 #这里的配置地址就是我们上面配置客户端的IP和端口
  
@@ -81,7 +81,7 @@ curl --socks5 127.0.0.1:1080 http://httpbin.org/ip
 
 ## 安装Privoxy转发http和https
 
-```text
+```markdown
 安装Privoxy
 yum -y install privoxy
  

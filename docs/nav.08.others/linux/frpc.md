@@ -12,7 +12,7 @@
 
 frpc@.service内填入以下内容：
 
-```txt
+```markdown
 [Unit]
 Description=SakuraFrp Service
 After=network.target
