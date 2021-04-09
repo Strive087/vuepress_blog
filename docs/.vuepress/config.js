@@ -2,7 +2,10 @@
 module.exports = {
   title: "前端之路",
   description: "Just playing around",
-  head: [["link", { rel: "icon", href: "/favicon.ico" }]],
+  head: [
+    ["link", { rel: "icon", href: "/favicon.ico" }],
+    ["meta", { name: "viewport", content: "width=device-width,initial-scale=1" }]
+  ],
   themeConfig: {
     // !禁用导航栏
     // navbar: false,
@@ -13,8 +16,8 @@ module.exports = {
     // //------------------------------------
     //侧边栏
     sidebar: {
-      '/nav.01.js/youknowjs/' : {
-        title: "深入理解js", 
+      "/nav.01.js/youknowjs/": {
+        title: "深入理解js"
       }
     },
     //侧边栏自动生成
@@ -66,10 +69,9 @@ module.exports = {
   },
   plugins: [
     "permalink-pinyin",
-    ["autobar", {pinyinNav: true}],
+    ["autobar", { pinyinNav: true }],
     "@vuepress/back-to-top",
     "@vuepress/medium-zoom",
-    'rpurl'
-  ],
-
+    "rpurl"
+  ]
 };
