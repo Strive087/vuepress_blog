@@ -38,17 +38,17 @@ server {
 
 3. 这也是最坑的一个，是什么SELinux未关闭，作为不是特别懂linux的肯定也跟我一样懵逼。反正就是查看SELinux是否关闭，显示为enable就是没关闭，需要关闭。
 
-```sh
-## 查看
-/usr/sbin/sestatus -v
-## 临时关闭
-setenforce  0
-## 永久关闭
-vim /etc/selinux/config
- 
-#SELINUX=enforcing
+    ```sh
+    ## 查看
+    /usr/sbin/sestatus -v
+    ## 临时关闭
+    setenforce  0
+    ## 永久关闭
+    vim /etc/selinux/config
+    
+    #SELINUX=enforcing
 
-SELINUX=disabled
-```
+    SELINUX=disabled
+    ```
 
-[SELinux是什么](https://zhuanlan.zhihu.com/p/30483108)
+    [SELinux是什么](https://zhuanlan.zhihu.com/p/30483108)

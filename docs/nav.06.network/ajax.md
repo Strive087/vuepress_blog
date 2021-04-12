@@ -1,14 +1,22 @@
-# Fetch API
+# ajax
+
+## xhr
+
+## $.ajax
+
+## axios
+
+## Fetch API
 
 fetch()是 XMLHttpRequest 的升级版，用于在 JavaScript 脚本里面发出 HTTP 请求。浏览器原生提供这个对象。
 
-## 特性
+### 特性
 
 1. fetch()使用 Promise，不使用回调函数，因此大大简化了写法，写起来更简洁。
 2. fetch()采用模块化设计，API 分散在多个对象上（Response 对象、Request 对象、Headers 对象），更合理一些；相比之下，XMLHttpRequest 的 API 设计并不是很好，输入、输出、状态都在同一个接口管理，容易写出非常混乱的代码。
 3. fetch()通过数据流（Stream 对象）处理数据，可以分块读取，有利于提高网站性能表现，减少内存占用，对于请求大文件或者网速慢的场景相当有用。XMLHTTPRequest 对象不支持数据流，所有的数据必须放在缓存里，不支持分块读取，必须等待全部拿到后，再一次性吐出来。
 
-## 基本用法
+### 基本用法
 
 先来个例子：
 
@@ -39,7 +47,7 @@ async function getJSON() {
 
 后文都采用await的写法，不使用.then()的写法。
 
-## Response对象
+### Response对象
 
 fetch()请求成功以后，得到的是一个 Response 对象。它对应服务器的 HTTP 回应。
 
@@ -81,7 +89,7 @@ fetch()发出请求以后，有一个很重要的注意点：只有网络错误�
 
 只有通过Response.status属性，得到 HTTP 回应的真实状态码，才能判断请求是否成功。response.status属性只有等于 2xx （200~299），才能认定请求成功。这里不用考虑网址跳转（状态码为 3xx），因为fetch()会将跳转的状态码自动转为 200。另一种方法是判断response.ok是否为true。
 
-### Response.headers 属性
+#### Response.headers 属性
 
 Response 对象还有一个Response.headers属性，指向一个 Headers 对象，对应 HTTP 回应的所有标头。
 
@@ -101,7 +109,7 @@ Headers 对象提供了以下方法，用来操作标头。
 
 这些方法中，最常用的是response.headers.get()，用于读取某个标头的值。
 
-### 读取Response内容
+#### 读取Response内容
 
 Response对象根据服务器返回的不同类型的数据，提供了不同的读取方法。
 
@@ -150,7 +158,7 @@ image1.src = URL.createObjectURL(myBlob1);
 image2.src = URL.createObjectURL(myBlob2);
 ```
 
-### Response.body 属性
+#### Response.body 属性
 
 Response.body属性是 Response 对象暴露出的底层接口，返回一个 ReadableStream 对象，供用户操作。
 
@@ -168,7 +176,7 @@ while(true) {
 
 上面示例中，response.body.getReader()方法返回一个遍历器。这个遍历器的read()方法每次返回一个对象，表示本次读取的内容块。这个对象的done属性是一个布尔值，用来判断有没有读完；value属性是一个 arrayBuffer 数组，表示内容块的内容，而value.length属性是当前块的大小。
 
-## fetch参数配置
+### fetch参数配置
 
 fetch()的第一个参数是 URL，还可以接受第二个参数，作为配置对象，定制发出的 HTTP 请求。
 
@@ -233,7 +241,7 @@ fetch()请求的底层用的是 Request() 对象的接口，参数完全一样�
   - strict-origin-when-cross-origin：同源请求时Referer标头包含完整路径，跨域请求时只包含域名，HTTPS 页面请求 HTTP 资源时不发送该标头。
   - unsafe-url：不管什么情况，总是发送Referer标头。
 
-## 取消fetch()请求
+### 取消fetch()请求
 
 fetch()请求发送以后，如果中途想要取消，需要使用AbortController对象。
 
