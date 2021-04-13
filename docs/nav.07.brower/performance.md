@@ -90,3 +90,58 @@ PRPL（推送、渲染、预先缓存、延迟加载）是一种通过激进代�
 下图为浏览器运行的单个帧的渲染流水线，称为像素管道，如果其中的一个或多个环节执行时间过长就会导致卡顿。像素管道是作为开发者能够掌握的对帧性能有影响的部分，其他部分由浏览器掌握，我们无法控制。我们的目标就是就是尽快完成这些环节，以达到 60 FPS 的目标。
 
 ![9LnDCu](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/9LnDCu.jpg)
+
+- JavaScript。通常来说，阻塞的发起都是来自于 JS ，这不是说不用 JS，而是要正确的使用 JS 。首先，JS 线程的运行本身就是阻塞 UI 线程的（暂不考虑 Web Worker）。从纯粹的数学角度而言，每帧的预算约为 16.7 毫秒（1000 毫秒 / 60 帧 = 16.66 毫秒/帧）。但因为浏览器需要花费时间将新帧绘制到屏幕上，只有 ~10 毫秒来执行 JS 代码，过长时间的同步执行 JS 代码肯定会导致超过 10ms 这个阈值，其次，频繁执行一些代码也会过长的占用每帧渲染的时间。此外，用 JS 去获取一些样式还会导致强制同步布局（后面会有介绍）。
+- 样式计算（Style）。此过程是根据匹配选择器（例如 .headline 或 .nav > .nav__item）计算出哪些元素应用哪些 CSS 规则的过程，这个过程不仅包括计算层叠样式表中的权重来确定样式，也包括内联的样式，来计算每个元素的最终样式。
+- 布局（Layout）。在知道对一个元素应用哪些规则之后，浏览器即可开始计算该元素要占据的空间大小及其在屏幕的位置。网页的布局模式意味着一个元素可能影响其他元素，一般来说如果修改了某个元素的大小或者位置，则需要检查其他所有元素并重排（re-flow）整个页面。
+- 绘制（Paint）。绘制是填充像素的过程。它涉及绘出文本、颜色、图像、边框和阴影，基本上包括元素的每个可视部分。绘制一般是在多个表面（通常称为层）上完成的，绘制包括两个步骤： 1) 创建绘图调用的列表， 2) 填充像素，后者也被称作栅格化。
+- 合成（Composite）。由于页面的各部分可能被绘制到多个层上，因此它们需要按正确顺序绘制到屏幕上，才能正确地渲染页面。尤其对于与另一元素重叠的元素来说，这点特别重要，因为一个错误可能使一个元素错误地出现在另一个元素的上层。
+
+### 采用更好的 CSS 方法进行优化
+
+上节渲染管道的每个环节都有可能引起卡顿，所以要尽可能减少通过的管道步骤。修改不同的样式属性会有以下几种不同的帧流程：
+
+![xnFvGJ](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/xnFvGJ.png)
+
+我们可以看到 JS，Style 和 Composite 是不可避免的，因为需要 JS 来引发样式的改变，Style 来计算更改后最终的样式，Composite 来合成各个层最终进行显示。Layout 和 Paint 这两个步骤不一定会被触发，所以在优化的过程中，如果是需要频繁触发的改变，我们应该尽可能避免 Layout 和 Paint。
+
+#### 尽量使用 transform 和 opacity 属性更改来实现动画
+
+性能最佳的像素管道版本会避免 Layout 和 Paint：
+
+![uQlY1V](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/uQlY1V.jpg)
+
+为了实现此目标，需要坚持更改可以由合成器单独处理的属性。常用的两个属性符合条件：transform 和 opacity。
+
+除了 transform 和 opacity，只会触发 composite 的 CSS 属性还有：pointer-events（是否响应鼠标事件）、perspective （透视效果）、perspective-origin（perspective 的灭点）、cursor（指针样式）、orphans（设置当元素内部发生分页时必须在页面底部保留的最少行数（用于打印或打印预览））、widows（设置当元素内部发生分页时必须在页面顶部保留的最少行数（用于打印或打印预览））。
+
+#### 减小选择器匹配的难度
+
+#### 提升元素到新的层
+
+#### 使用 flexbox 而不是较早的布局模型
+
+### 尽量避免 Layout
+
+#### 强制同步重排 - FSL (forced synchronous layout)
+
+#### FLIP策略
+
+### 高性能 JavaScript
+
+#### 昂贵的 DOM 操作
+
+### 事件委托
+
+### 避免微优化
+
+### Web Worker
+
+### 内存管理
+
+参考链接：
+
+[加载性能](https://developers.google.com/web/fundamentals/performance/get-started)
+[渲染性能](https://developers.google.com/web/fundamentals/performance/rendering)
+[前端性能优化之浏览器渲染优化](https://github.com/fi3ework/blog/issues/9)
+
