@@ -26,6 +26,36 @@ Cookie包含的信息：
 
 这些属性以键值对的方式进行保存，为了安全，它的内容大多进行了加密处理。Cookie文件的命名格式是：用户名@网站地址[数字].txt
 
+### 浏览器携带Cookie条件
+
+Set-Cookie响应头字段（Response header）是服务器发送到浏览器或者其他客户端的一些信息，一般用于登陆成功的情况下返回给客户端的凭证信息，然后下次请求时会带上这个cookie，这样服务器端就能知道是来自哪个用户的请求了。
+
+Cookie请求头字段是客户端发送请求到服务器端时发送的信息（满足一定条件下浏览器自动完成，无需前端代码辅助）。
+
+![xH9rhO](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/xH9rhO.png)
+
+请看上面标红的三个属性，拿一个Http POST请求来说  <http://aaa.www.com/xxxxx/list>
+
+如果满足下面几个条件：
+
+1. 浏览器端某个Cookie的domain字段等于aaa.www.com或者www.com
+
+2. 都是http或者https，或者不同的情况下Secure属性为false
+
+3. 要发送请求的路径，即上面的xxxxx跟浏览器端Cookie的path属性必须一致，或者是浏览器端Cookie的path的子目录，比如浏览器端Cookie的path为/test，那么xxxxxxx必须为/test或者/test/xxxx等子目录才可以
+
+上面3个条件必须同时满足，否则该Post请求就不能自动带上浏览器端已存在的Cookie
+
+我们常用的$.ajax和axios都是基于原生xhr封装，他们在非跨域发送请求的时候，都会默认携带cookie。而fetch则要注意credentials属性，该属性可选值为：
+
+- omit: 从不发送cookies.
+- same-origin: 只有当URL与响应脚本同源才发送 cookies、 HTTP Basic authentication 等验证信息.(浏览器默认值,在旧版本浏览器，例如safari 11依旧是omit，safari 12已更改)
+- include: 不论是不是跨域的请求,总是发送请求资源域在本地的 cookies、 HTTP Basic authentication 等验证信息.
+
+ajax和fetch在跨域请求时，需要分别配置`withCredentials=true`和`credential：include`，才可携带cookie。
+
+### Cookie优缺点
+
 Cookie的优点：
 
 - 给用户更人性化的使用体验，如记住“密码功能”、老用户登录欢迎语
