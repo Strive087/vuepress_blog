@@ -144,4 +144,3 @@ PRPL（推送、渲染、预先缓存、延迟加载）是一种通过激进代�
 [加载性能](https://developers.google.com/web/fundamentals/performance/get-started)
 [渲染性能](https://developers.google.com/web/fundamentals/performance/rendering)
 [前端性能优化之浏览器渲染优化](https://github.com/fi3ework/blog/issues/9)
-
