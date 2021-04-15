@@ -127,7 +127,7 @@ DOM 中的内联事件监听器，如 location、onclick、onerror、onload、on
 
 - 验证码：防止脚本冒充用户提交危险操作。
 
-## XSS检测
+### XSS检测
 
 - 使用通用 XSS 攻击字符串手动检测 XSS 漏洞。
 

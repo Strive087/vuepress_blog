@@ -199,7 +199,7 @@ ajax('http://url2',response);
           },0)
           fn = null;
           return function () {
-            //如果intv存在说明，该回调不是异步
+            //如果intv存在说明该回调不是并不是被ajax异步执行而是同步执行
             if(intv){
               //将函数还原到fn，并绑定上this和参数
               fn = origin_fn.bind.call(
@@ -211,7 +211,7 @@ ajax('http://url2',response);
           }
         }
         var a = 0;
-        //不过ajax这个函数是否是异步调用，response始终都会是异步调用
+        //不管ajax这个函数是否是异步调用，response始终都会是异步调用
         ajax('http://url1',asyncify(response));
         a++;
         ```

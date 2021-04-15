@@ -732,3 +732,42 @@ function throttleTimer(fn, delay) {
   };
 }
 ```
+
+## 数组字符串OR/And拼接
+
+hiretual的一面，就这道题，当时居然想了40多分钟不知道做不出来，晚上自己回顾了下，真的觉得很简单，花了不到15分钟。总结来说就是感觉中午面试的时候感觉有面试官在就无法真的集中思绪或者是刷题太少了。加油吧。。
+
+Example2:
+input: [[["java", "maven", "spring"], "python"], ["machine learning", "deep learning"]]
+output: (("java" OR "maven" OR "spring") AND "python") AND ("machine learning" OR "deep learning")
+
+```js
+var result = "";
+function handleArr(arr) {
+  arr.forEach(function (item, index) {
+    if (Array.isArray(item)) {
+      result += "(";
+      handleArr(item);
+      result += ")";
+      if (index != arr.length - 1) {
+        result += " And ";
+      }
+    } else {
+      result += `"${item}"`;
+      if (index != arr.length - 1) {
+        if (Array.isArray(arr[index + 1])) {
+          result += " And ";
+        } else {
+          result += " OR ";
+        }
+      }
+    }
+  });
+}
+handleArr([
+  ["javascript", ["java", ["maven", "git"], "spring"], "python"],
+  ["machine learning", "deep learning"],
+  ["npm", "nvm"]
+]);
+console.log(result);
+```

@@ -64,3 +64,32 @@ node中事件循环的顺序
 process.nextTick 是一个独立于 eventLoop 的任务队列。
 
 在每一个 eventLoop 阶段完成后会去检查 nextTick 队列，如果里面有任务，会让这部分任务优先于微任务执行。是所有异步任务中最快执行的。
+
+## 与浏览器环境的区别
+
+浏览器环境下，microtask的任务队列是每个macrotask执行完之后执行。而在Node.js中，microtask会在事件循环的各个阶段之间执行，也就是一个阶段执行完毕，就会去执行microtask队列的任务。
+
+![16841bad1cda741f](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/16841bad1cda741f.jpg)
+
+```js
+setTimeout(()=>{
+    console.log('timer1')
+    Promise.resolve().then(function() {
+        console.log('promise1')
+    })
+}, 0)
+setTimeout(()=>{
+    console.log('timer2')
+    Promise.resolve().then(function() {
+        console.log('promise2')
+    })
+}, 0)
+```
+
+Node端运行结果分两种情况：
+
+- 如果是node11版本一旦执行一个阶段里的一个宏任务(setTimeout,setInterval和setImmediate)就立刻执行微任务队列，这就跟浏览器端运行一致，最后的结果为timer1=>promise1=>timer2=>promise2
+- 如果是node10及其之前版本：要看第一个定时器执行完，第二个定时器是否在完成队列中。
+
+  - 如果是第二个定时器还未在完成队列中，最后的结果为timer1=>promise1=>timer2=>promise2
+  - 如果是第二个定时器已经在完成队列中，则最后的结果为timer1=>timer2=>promise1=>promise2
