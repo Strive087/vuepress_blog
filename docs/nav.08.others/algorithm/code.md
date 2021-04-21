@@ -771,3 +771,18 @@ handleArr([
 ]);
 console.log(result);
 ```
+
+## 观察者模式
+
+```js
+function Subject(){
+  this.observers = []
+}
+
+Subject.prototype.add = function(observer){
+  this.observers.push(observer)
+}
+
+Subject.prototype.remove = function(){}
+
+```
