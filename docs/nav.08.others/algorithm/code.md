@@ -772,17 +772,96 @@ handleArr([
 console.log(result);
 ```
 
-## 观察者模式
+## 观察者模式和发布订阅模式
+
+![bVbL8hq](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/bVbL8hq.jpg)
+
+- 观察者模式：
+
+  ```js
+  function Subject() {
+    this.observers = [];
+  }
+
+  Subject.prototype.add = function (observer) {
+    this.observers.push(observer);
+  };
+
+  Subject.prototype.remove = function (observer) {
+    this.observers.splice(this.observers.indexOf(observer), 1);
+  };
+
+  Subject.prototype.notify = function () {
+    for (let observer of this.observers) {
+      observer.sayName();
+    }
+  };
+
+  function Observer(name) {
+    this.name = name;
+  }
+
+  Observer.prototype.sayName = function () {
+    console.log(this.name);
+  };
+
+  let subject = new Subject();
+  let observer = new Observer("xiaolan");
+  subject.add(observer);
+  subject.add(new Observer("xiaoming"));
+  subject.add(new Observer("xiaohong"));
+  subject.remove(observer);
+  subject.notify();
+  ```
+
+- 发布订阅模式：
 
 ```js
-function Subject(){
-  this.observers = []
+function PubSub() {
+  this.publishList = {};
 }
 
-Subject.prototype.add = function(observer){
-  this.observers.push(observer)
-}
+PubSub.prototype.subscribe = function (name, callback) {
+  if (!this.publishList[name]) {
+    this.publishList[name] = [callback];
+  } else {
+    this.publishList[name].push(callback);
+  }
+};
 
-Subject.prototype.remove = function(){}
+PubSub.prototype.unSubscribe = function (name, callback) {
+  if (callback) {
+    this.publishList[name].splice(this.publishList[name].indexOf(callback), 1);
+  } else {
+    delete this.publishList[name];
+  }
+};
 
+PubSub.prototype.publish = function (name, ...args) {
+  if (this.publishList[name]) {
+    for (let cb of this.publishList[name]) {
+      cb(...args);
+    }
+  }
+};
+
+let Pub = new PubSub();
+Pub.subscribe("sing", function (songName) {
+  console.log("sing 订阅者01 歌名为 ", songName);
+});
+Pub.subscribe("sing", function (songName) {
+  console.log("sing 订阅者02 歌名为 ", songName);
+});
+Pub.subscribe("dance", function (para) {
+  console.log("dance 订阅者01 歌名为 ", para);
+});
+Pub.subscribe("dance", function (para) {
+  console.log("dance 订阅者02 歌名为 ", para);
+});
+Pub.unSubscribe("dance", function (para) {
+  console.log("dance 订阅者02 歌名为 ", para);
+});
+
+Pub.publish("sing", "Heal the word");
+Pub.publish("dance", "华尔兹舞曲");
 ```

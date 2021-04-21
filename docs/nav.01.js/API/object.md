@@ -50,6 +50,10 @@ c.hasOwnProperty("d"); //true
 
 isPrototypeOf() 方法用于测试一个对象是否存在于另一个对象的原型链上。
 
+## Object.prototype.toString()
+
+toString() 方法返回一个表示该对象的字符串。**这个要记住Object实例的toString()方法是可以返回"[object type]"，所以我们可以利用Object.prototype.toString.call(obj)来做对象类型检测。**
+
 ## 对象屏蔽系列
 
 - Object.preventExtensions()
