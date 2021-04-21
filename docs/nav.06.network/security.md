@@ -38,7 +38,7 @@ CSRF的两个特点：
 
 - 阻止不明外域的访问
   - 同源检测
-  - Samesite Cookie
+  - [Samesite Cookie](https://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html)
 - 提交时要求附加本域才能获取的信息
   - CSRF Token
   - 双重Cookie验证
