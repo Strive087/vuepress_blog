@@ -865,3 +865,27 @@ Pub.unSubscribe("dance", function (para) {
 Pub.publish("sing", "Heal the word");
 Pub.publish("dance", "华尔兹舞曲");
 ```
+
+## 函数柯里化
+
+在数学和计算机科学中，柯里化是一种将使用多个参数的一个函数转换成一系列使用一个参数的函数的技术。简单说就是用闭包把参数保存起来，当参数的数量足够执行函数了，就开始执行函数。
+
+应用场景：比如前两个几个参数需要复用，后面参数可以自由选择。
+
+```js
+function currying(fn,...args){
+  if(fn.length <= args.length){
+    return fn(...args);
+  }else{
+    return currying.bind(null,fn,...args);
+  }
+}
+
+function add(x,y,z){
+  return x + y + z;
+}
+
+let curryAdd = currying(add,1,2)
+console.log(curryAdd(3));
+console.log(curryAdd(4));
+```
