@@ -12,5 +12,9 @@ features:
   details: 继续探索前端技术,享受学习的乐趣
 - title: 记录沉淀
   details: 日常记录学习笔记,消化沉淀技术知识
-# footer: 前端之路 | Copyright © 2020 Zhu DL
+pageClass: custom-page-class
 ---
+
+#
+
+[闽ICP备20011685号-1](https://beian.miit.gov.cn/)
