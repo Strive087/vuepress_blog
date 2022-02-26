@@ -283,6 +283,17 @@ defer 与相比普通 script，有两点区别：
 
 因为 DOM 是属于渲染引擎中的东西，而 JS 又是 JS 引擎中的东西。当我们通过 JS 操作 DOM 的时候，其实这个操作涉及到了两个线程之间的通信，那么势必会带来一些性能上的损耗。操作 DOM 次数一多，也就等同于一直在进行线程之间的通信，并且操作 DOM 可能还会带来重绘回流的情况，所以也就导致了性能上的问题。
 
+## Chrome线程化渲染框架
+
+有别于传统的单线程渲染，chrome51之后的新特性——线程化渲染框架（Threaded Compositor Architecture）
+
+- 内核线程（Main/Render Thread）：负责DOM树构建、元素的布局、图层绘制记录部分（main-thread side）、JavaScript的执行
+- 合成线程（Compositor Thread）：图层绘制实现部分（impl-side）、图层图像合成
+
+![bVbkwyp](https://zhuduanlei-1256381138.cos.ap-guangzhou.myqcloud.com/uPic/bVbkwyp.jpg)
+
+上图可知，页面Frame#1在内核线程中完成js执行、布局和绘制后，经过一个周期合成线程去执行Frame#1页面图像的合成。
+
 ## 参考链接
 
 - [聊聊浏览器的渲染机制](https://www.jianshu.com/p/c9049adff5ec)
